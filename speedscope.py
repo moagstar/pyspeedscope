@@ -3,6 +3,7 @@
 See also: https://www.speedscope.app
 """
 
+
 import argparse
 import time
 import json
@@ -57,10 +58,16 @@ class Recorder:
         name = frame.f_code.co_name
         self.records.append(Record(timestamp, typ, filename, line, name))
 
-    def export_to_json(self, filename):
+    def export_to_json(self, filename_or_stream):
+
+        if isinstance(filename_or_stream, str):
+            filename = filename_or_stream
+            with open(filename, 'w') as f:
+                return self.export_to_json(f)
+
+        stream = filename_or_stream
         data = self._make_speed_scope_dict()
-        with open(filename, "w") as f:
-            json.dump(data, f, indent=2)
+        json.dump(data, stream, indent=2)
 
     def _make_speed_scope_dict(self):
         events = []
